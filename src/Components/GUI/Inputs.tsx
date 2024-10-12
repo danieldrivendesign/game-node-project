@@ -1,5 +1,5 @@
 import {Card, Kbd, Table} from "flowbite-react";
-import {MdKeyboardArrowDown, MdKeyboardArrowLeft, MdKeyboardArrowRight, MdKeyboardArrowUp} from "react-icons/md";
+//import {MdKeyboardArrowDown, MdKeyboardArrowLeft, MdKeyboardArrowRight, MdKeyboardArrowUp} from "react-icons/md";
 import React from "react";
 
 function InputGridItem({keyCodes, desc}: { keyCodes: string[]; desc: string }) {
@@ -39,10 +39,16 @@ function InputGridItemWithIcon({icons, desc}: { icons: React.FC<React.SVGProps<S
     )
 }
 
+
+// todo: add Inputs
+const inputSettings = {
+    deleteKeyCode: ['Backspace', 'Delete'],
+
+}
 const keys = [
     {
         type: "keyCode",
-        keys: ['Left Mouse'],
+        keys: ['Left Mouse','Middle Mouse'],
         description: "Pan Camera",
         icons: []
     },
@@ -59,10 +65,10 @@ const keys = [
         icons: []
     },
     {
-        type: "icon",
-        keys: [],
-        description: "Choose and activate previous/next tab.",
-        icons: [MdKeyboardArrowUp, MdKeyboardArrowDown, MdKeyboardArrowLeft, MdKeyboardArrowRight]
+        type: "keyCode",
+        keys: ['shift'],
+        description: "Selection Box",
+        icons: []
     },
 ]
 

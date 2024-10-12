@@ -4,12 +4,7 @@
 
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  /*line-height: 1.5;*/
-  /*font-weight: 400;*/
-
   color-scheme: light dark;
-  /*color: rgba(255, 255, 255, 0.87);*/
-  /*background-color: #242424;*/
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -17,57 +12,12 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/*a {*/
-/*  font-weight: 500;*/
-/*  color: #646cff;*/
-/*  text-decoration: inherit;*/
-/*}*/
-/*a:hover {*/
-/*  color: #535bf2;*/
-/*}*/
-
 body {
   margin: 0;
   display: flex;
   place-items: center;
 }
 
-/*h1 {*/
-/*  font-size: 3.2em;*/
-/*  line-height: 1.1;*/
-/*}*/
-
-/*button {*/
-/*  border-radius: 8px;*/
-/*  border: 1px solid transparent;*/
-/*  padding: 0.6em 1.2em;*/
-/*  font-size: 1em;*/
-/*  font-weight: 500;*/
-/*  font-family: inherit;*/
-/*  background-color: #1a1a1a;*/
-/*  cursor: pointer;*/
-/*  transition: border-color 0.25s;*/
-/*}*/
-/*button:hover {*/
-/*  border-color: #646cff;*/
-/*}*/
-/*button:focus,*/
-/*button:focus-visible {*/
-/*  outline: 4px auto -webkit-focus-ring-color;*/
-/*}*/
-
-/*@media (prefers-color-scheme: light) {*/
-/*  :root {*/
-/*    color: #213547;*/
-/*    background-color: #ffffff;*/
-/*  }*/
-/*  a:hover {*/
-/*    color: #747bff;*/
-/*  }*/
-/*  button {*/
-/*    background-color: #f9f9f9;*/
-/*  }*/
-/*}*/
 .toast {
   opacity: 1;
   transition: opacity 1s ease-in-out;
@@ -75,4 +25,50 @@ body {
 
 .toast.fade-out {
   opacity: 0;
+}
+
+.react-flow__node-levelNode.selected {
+  --borderWidth: 3px;
+  background: #1D1F20;
+  border-radius: 20px;
+}
+
+.react-flow__node-levelNode.selected:after {
+  content: '';
+  position: absolute;
+  top: calc(-1 * var(--borderWidth));
+  left: calc(-1 * var(--borderWidth));
+  height: calc(100% + var(--borderWidth) * 2);
+  width: calc(100% + var(--borderWidth) * 2);
+  background: linear-gradient(60deg, #f79533, #f37055, #ef4e7b, #a166ab, #5073b8, #1098ad, #07b39b, #6fba82);
+  border-radius: calc(3 * var(--borderWidth));
+  z-index: -1;
+  animation: animated-gradient 3s ease alternate infinite;
+  background-size: 300% 300%;
+}
+
+@keyframes animated-gradient {
+  0% {
+    background-position: 0 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+.react-flow__edge .react-flow__edge-path {
+  stroke: url(#edge-gradient);
+  stroke-width: 4;
+  stroke-opacity: 0.75;
+}
+.react-flow__node-levelNode {
+  @apply bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex justify-center items-center
+}
+.simplebar-track.simplebar-vertical .simplebar-scrollbar:before {
+  /* @apply bg-slate-400/50 w-1.5; */
+  background-color: rgb(148 163 184 / 0.5);
+  width: 0.375rem /* 6px */;
 }
