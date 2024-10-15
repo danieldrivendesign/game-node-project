@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
-import {HiChevronDoubleLeft, HiChevronDoubleRight, HiAcademicCap} from 'react-icons/hi';
-import {Page, pages} from '../Menus/SidebarPages';
+import {HiAcademicCap, HiChevronDoubleLeft, HiChevronDoubleRight} from 'react-icons/hi';
+import {Page, pages} from './SidebarPages';
 
 function CustomSidebarItem({title, icon, link, isExpanded}: Page & { isExpanded: boolean }) {
     return (
@@ -67,32 +67,35 @@ export default function SidebarRetract() {
     return (
         <>
             <aside id="logo-sidebar"
-                   className={(isExpanded ? 'w-64' : 'w-16') + ' fixed top-0 z-10 h-screen pt-20 transition-all duration-150 ease-in-out -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700'}
+                   className={(isExpanded ? 'w-64 ' : 'w-16 ') + 'flex flex-col h-full mt-[3.5rem] fixed max-h-full bg-gradient-to-bl to-red-700 from-purple-600 via-teal-500 pr-[0.1rem] top-0 rounded-sm z-10 transition-all duration-150 ease-in-out -translate-x-full sm:translate-x-0'}
                    aria-label="Sidebar">
-                <div className={'w-full flex justify-end p-2'}>
-                    {isExpanded ?
-                        <button onClick={() => setIsExpanded(false)}>
-                            <HiChevronDoubleLeft/>
-                        </button> :
-                        <button onClick={() => setIsExpanded(true)}>
-                            <HiChevronDoubleRight/>
-                        </button>}
-                </div>
-                <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
-                    <ul className="space-y-2 font-medium">
-                        {pages.map((p: Page) => {
-                            return (
-                                <li key={crypto.randomUUID()}>
-                                    <CustomSidebarItem title={p.title} icon={p.icon}
-                                                       link={p.link}
-                                                       isExpanded={isExpanded}/>
-                                </li>
-                            );
-                        })}
-                        <li key={crypto.randomUUID()}>
-                            <AccordionItem icon={<HiAcademicCap />} isExpanded={isExpanded} link={""} title={"Test"}/>
-                        </li>
-                    </ul>
+                <div className={'dark:bg-primary bg-primary-light w-full flex-grow'}>
+                    <div className={'w-full flex justify-end p-2'}>
+                        {isExpanded ?
+                            <button onClick={() => setIsExpanded(false)}>
+                                <HiChevronDoubleLeft/>
+                            </button> :
+                            <button onClick={() => setIsExpanded(true)}>
+                                <HiChevronDoubleRight/>
+                            </button>}
+                    </div>
+                    <div className="h-full px-3 pb-4 overflow-y-auto bg-primary-light dark:bg-primary">
+                        <ul className="space-y-2 font-medium">
+                            {pages.map((p: Page) => {
+                                return (
+                                    <li key={crypto.randomUUID()}>
+                                        <CustomSidebarItem title={p.title} icon={p.icon}
+                                                           link={p.link}
+                                                           isExpanded={isExpanded}/>
+                                    </li>
+                                );
+                            })}
+                            <li key={crypto.randomUUID()}>
+                                <AccordionItem icon={<HiAcademicCap/>} isExpanded={isExpanded} link={''}
+                                               title={'Test'}/>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </aside>
         </>

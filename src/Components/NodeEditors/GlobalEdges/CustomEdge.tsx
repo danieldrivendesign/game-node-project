@@ -1,7 +1,7 @@
-import React from 'react';
 import {type EdgeProps, getBezierPath} from '@xyflow/react';
+import React from 'react';
 
-export function CustomEdgeLine(){
+export function CustomEdgeLine() {
     return (
         <svg>
             <defs>
@@ -23,31 +23,30 @@ export function CustomEdgeLine(){
                 </marker>
             </defs>
         </svg>
-    )
+    );
 }
 
-export default function TurboEdge({
-                                      id,
-                                      sourceX,
-                                      sourceY,
-                                      targetX,
-                                      targetY,
-                                      sourcePosition,
-                                      targetPosition,
-                                      style = {},
-                                      markerEnd
-                                  }: EdgeProps) {
+export default function CustomEdge({
+                                       id,
+                                       sourceX,
+                                       sourceY,
+                                       targetX,
+                                       targetY,
+                                       sourcePosition,
+                                       targetPosition,
+                                       style = {},
+                                       markerEnd
+                                   }: EdgeProps) {
     const xEqual = sourceX === targetX;
     const yEqual = sourceY === targetY;
 
     const [edgePath] = getBezierPath({
-        // we need this little hack in order to display the gradient for a straight line
         sourceX: xEqual ? sourceX + 0.0001 : sourceX,
         sourceY: yEqual ? sourceY + 0.0001 : sourceY,
         sourcePosition,
         targetX,
         targetY,
-        targetPosition,
+        targetPosition
     });
 
     return (

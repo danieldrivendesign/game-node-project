@@ -12,39 +12,30 @@ import {
     Panel,
     ReactFlow,
     ReactFlowInstance,
-    ReactFlowProvider,
     reconnectEdge,
     useEdgesState,
     useNodesState,
     useReactFlow
 } from '@xyflow/react';
-import React, {DragEvent, useCallback, useRef, useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import {ContextModal, ContextModalData} from '../../Menus/ContextModal';
 import {InspectorSidebar} from '../../Menus/InspectorSidebar';
-import {AppNode, initialNodes, nodeTypes} from '../../Nodes';
-import TurboEdge, {CustomEdgeLine} from '../../Nodes/Edges/TurboEdge';
+import {CustomEdgeLine} from '../GlobalEdges/CustomEdge';
+import {
+    AppNode,
+    defaultEdgeOptions, edgeTypes,
+    GetTypesForFlow,
+    initialNodes,
+    LevelEditorNodeTypes
+} from './Nodes/LevelEditorNodeTypes';
 
 const inputSettings = {
     deleteKeyCode: ['Backspace', 'Delete']
 };
 const fitViewOptions: FitViewOptions = {
-    padding: 2
+    padding: 1
 };
-
 const nodeOrigin: NodeOrigin = [0.0, 0.0];
-
-const onDragOver = (event: DragEvent) => {
-    event.preventDefault();
-    event.dataTransfer.dropEffect = 'move';
-};
-
-const edgeTypes = {
-    turbo: TurboEdge
-};
-const defaultEdgeOptions = {
-    type: 'turbo'
-    // markerEnd: 'edge-circle',
-};
 
 function LevelFlow() {
     const edgeReconnectSuccessful = useRef(true);
@@ -52,22 +43,26 @@ function LevelFlow() {
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
     const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
-    const {getNodes, getEdges} = useReactFlow<AppNode, Edge>();
     const [editNode, setEditNode] = useState<AppNode | null>(null);
     const {setViewport} = useReactFlow();
     const flowKey = 'level-flow';
     const [isReconnecting, setIsReconnecting] = useState(false);
     const [menu, setMenu] = useState<ContextModalData | null>(null);
+    const [reconnectingEdge, setReconnectingEdge] = useState<Edge | null>(null);
 
-    const onReconnectStart = useCallback(() => {
+    const onReconnectStart = useCallback((event: React.MouseEvent, edge: Edge, handleType: 'source' | 'target') => {
+        //console.log(edge, handleType);
         edgeReconnectSuccessful.current = false;
         setIsReconnecting(true);
+        setReconnectingEdge(edge);
     }, [setIsReconnecting, edgeReconnectSuccessful]);
 
     const onReconnect = useCallback((oldEdge: Edge, newConnection: Connection) => {
+        // console.log('On Reconnect - Edge: ', oldEdge);
+        // console.log('On Reconnect - Connection: ', newConnection);
         edgeReconnectSuccessful.current = true;
         setEdges(els => reconnectEdge(oldEdge, newConnection, els));
-    }, [setIsReconnecting, edgeReconnectSuccessful]);
+    }, [setEdges]);
 
     const onReconnectEnd = useCallback((_: any, edge: Edge) => {
         if (!edgeReconnectSuccessful.current) {
@@ -75,7 +70,8 @@ function LevelFlow() {
         }
         edgeReconnectSuccessful.current = true;
         setIsReconnecting(false);
-    }, [setIsReconnecting, edgeReconnectSuccessful]);
+        setReconnectingEdge(null);
+    }, [setEdges]);
 
     const onConnect = useCallback(
         (params: Connection) => {
@@ -84,7 +80,7 @@ function LevelFlow() {
         [setEdges]
     );
 
-    const onInit: (rfi: any) => void = (rfi) => setReactFlowInstance(rfi);
+    const onInit: (rfi: any) => void = (rfi: ReactFlowInstance) => setReactFlowInstance(rfi);
 
     const onSave: () => void = useCallback(() => {
         if (reactFlowInstance) {
@@ -111,14 +107,8 @@ function LevelFlow() {
 
     const isValidConnection: (connection: Edge | Connection) => boolean = useCallback(
         (connection: Edge | Connection): boolean => {
-            if (isReconnecting) {
-                return true;
-            }
-            if (connection.target === connection.source) return false;
-            return !getEdges().some(e =>
-                e.targetHandle == connection.targetHandle || e.sourceHandle == connection.sourceHandle
-            );
-        }, [getNodes, getEdges]
+            return connection.source !== connection.target;
+        }, [isReconnecting, reconnectingEdge]
     );
 
     const onPaneContextMenu = useCallback(
@@ -128,10 +118,10 @@ function LevelFlow() {
 
             // @ts-ignore
             const pane = reactFlowRef.current.getBoundingClientRect();
-            let top = e.clientY + 100;
-            let left = e.clientX + 300;
-            const yOffset = 100;
-            const xOffset = 300;
+            let top = e.clientY;
+            let left = e.clientX;
+            const yOffset = 50;
+            const xOffset = 350;
 
             if (top + yOffset > pane.bottom) {
                 top = pane.bottom - yOffset;
@@ -141,7 +131,7 @@ function LevelFlow() {
             }
             setMenu({top, left});
         },
-        [setMenu, reactFlowInstance]
+        [setMenu]
     );
 
     const onPaneClick = useCallback((_: React.MouseEvent) => {
@@ -159,12 +149,13 @@ function LevelFlow() {
     return (
         <>
             <ReactFlow
+                fitView
                 nodes={nodes}
                 edges={edges}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
-                nodeTypes={nodeTypes}
+                nodeTypes={GetTypesForFlow(LevelEditorNodeTypes)}
                 {...inputSettings}
                 fitViewOptions={fitViewOptions}
                 defaultEdgeOptions={defaultEdgeOptions}
@@ -173,11 +164,8 @@ function LevelFlow() {
                 onReconnect={onReconnect}
                 onReconnectStart={onReconnectStart}
                 onReconnectEnd={onReconnectEnd}
-                // onDrop={onDrop}
-                // onDragOver={onDragOver}
                 nodeOrigin={nodeOrigin}
-                fitView
-                attributionPosition="top-left"
+                attributionPosition="top-right"
                 isValidConnection={isValidConnection}
                 onPaneContextMenu={onPaneContextMenu}
                 ref={reactFlowRef}
@@ -186,29 +174,34 @@ function LevelFlow() {
                 onSelectionChange={onSelectionChange}
                 edgesReconnectable={true}
             >
-                {/*<p className={'absolute top-20 left-20'}>Reconnecting: {isReconnecting.toString()}</p>*/}
-                <Controls/>
-                <MiniMap nodeBorderRadius={20} nodeStrokeWidth={10} nodeStrokeColor={'cyan'} maskStrokeColor={'cyan'}
-                         maskStrokeWidth={1} pannable inversePan zoomable/>
+                <Controls position={'bottom-left'} style={{left: 70}}/>
+                <MiniMap pannable inversePan zoomable
+                         zoomStep={1}
+                         nodeBorderRadius={50}
+                         nodeStrokeWidth={10}
+                         nodeStrokeColor={'#7209B7'}
+                         maskStrokeColor={'#7c1125'}
+                         maskStrokeWidth={1}
+                         maskColor={'#101a1c'}
+                         nodeColor={'#101a1c'}
+                         className={'opacity-80'}/>
                 <Background variant={BackgroundVariant.Dots} gap={60} size={5}
                             className={'opacity-20'}/>
                 {menu && <ContextModal {...menu}/>}
                 <CustomEdgeLine/>
                 <Panel position={'top-right'} id={'data-sidebar'}>
-                    <InspectorSidebar
-                        nodeData={editNode}
-                        onNodeDataChange={(updatedData?: AppNode) => {
-                            if (updatedData)
-                                updateNodeData(updatedData);
-                        }}
+                    <InspectorSidebar nodeData={editNode} onNodeDataChange={(updatedData?: AppNode) => {
+                        if (updatedData)
+                            updateNodeData(updatedData);
+                    }}
                     />
                 </Panel>
+                {/*<button className={'absolute top-20 left-40 z-50 pointer-events-auto'}*/}
+                {/*    onClick={() => {}}>Test</button>*/}
             </ReactFlow>
         </>
     );
 }
 
 export default () =>
-    <ReactFlowProvider>
-        <LevelFlow/>
-    </ReactFlowProvider>;
+    <LevelFlow/>

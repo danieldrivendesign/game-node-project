@@ -21,7 +21,7 @@
     "jsx": "react-jsx"
   },
   "include": [
-    "src",
+    "src","src/*","src/*/*.*",
     "src/img.d.ts"
   ],
   "references": [
