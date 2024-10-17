@@ -3,6 +3,7 @@ import React, {CSSProperties, useContext, useEffect, useState} from 'react';
 import {DebugProvider} from '../../Contexts/DebugProvider';
 
 export type CustomHandleProps = {
+    id: string,
     type: HandleType,
     position: Position,
     isConnectable?: boolean,
@@ -11,24 +12,26 @@ export type CustomHandleProps = {
     dataType?: string
 }
 
-const CustomHandle = ({type, position, style, connectionLimit = 1, dataType = 'none'}: CustomHandleProps) => {
+const HandleLimited = ({id, type, position, style, connectionLimit = 1, dataType = 'none'}: CustomHandleProps) => {
     const connections = useHandleConnections({
-        type: type
+        type: type,
+        id: id
     });
     const [hasConnection, setHasConnection] = useState(false);
     const showDebug = useContext(DebugProvider);
+
     useEffect(() => {
         setHasConnection(connections.length >= (connectionLimit ?? 99));
     }, [connections]);
 
     return (
         <Handle
+            id={id}
             type={type}
             position={position}
             isConnectable={!hasConnection}
             className={'w-2 h-2' + (hasConnection ? ' bg-blue-800' : ' ')}
             style={style}>
-
             <div>
                 {showDebug &&
                     <div className={'flex bg-gray-700 w-28 mt-5 rounded-lg'}>
@@ -42,4 +45,4 @@ const CustomHandle = ({type, position, style, connectionLimit = 1, dataType = 'n
     );
 };
 
-export default CustomHandle;
+export default HandleLimited;

@@ -1,4 +1,5 @@
 import React, {ChangeEvent, ReactElement, useEffect, useState} from 'react';
+import {encodeImageToBase64, resizeAndEncodeImage} from '../Helpers';
 
 export type CustomFormInput = {
     id: string,
@@ -9,7 +10,10 @@ export type CustomFormInput = {
     options?: string[]
 }
 
-function CreateLabel(name: string, id: string) {
+function CreateLabel(name?: string, id?: string) {
+    if (!name || !id) {
+        return (<></>);
+    }
     return (
         <div className="inline-flex items-center justify-center w-full">
             <hr className="w-4 h-[.2rem] bg-teal-600 border-0 dark:bg-blue-800 opacity-50 shadow shadow-teal-800 rounded-lg"/>
@@ -37,6 +41,7 @@ export function DropDownInput(props: CustomFormInput): ReactElement {
         <div>
             {CreateLabel(props.name, (props.id + 'text'))}
             <select id={props.id + 'text'} onChange={handleInputChange} value={input}
+                    disabled={!props.isEditable}
                     className={'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'}>
                 <option>Select an option...</option>
                 {props.options?.map((item: string) => (
@@ -62,7 +67,8 @@ export function TextInput(props: CustomFormInput): ReactElement {
     return (
         <div>
             {CreateLabel(props.name, (props.id + 'text'))}
-            <input type="text" id={props.id + 'text'} value={input} onFocus={(e) => e.target.select()}
+            <input type="text" id={props.id + 'text'} value={input.toReadableString()}
+                   onFocus={(e) => e.target.select()}
                    className="accent-pink-500 disabled:opacity-50 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                    placeholder={`Enter ${props.name}`} onChange={handleInputChange}
                    disabled={!props.isEditable}/>
@@ -113,7 +119,6 @@ export function CheckboxInput(props: CustomFormInput): ReactElement {
     );
 }
 
-
 export function NumberInput(props: CustomFormInput): ReactElement {
     const [input, setInput] = useState(props.data || '');
 
@@ -138,22 +143,34 @@ export function NumberInput(props: CustomFormInput): ReactElement {
 }
 
 export function ImageFileUpload(props: CustomFormInput): ReactElement {
-    const [previewUrl, setPreviewUrl] = useState<string | null>(props.data ? URL.createObjectURL(props.data) : null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(props.data ?? null);
+    const [currentNodeId, setCurrentNodeId] = useState<string | null>(props.id);
 
     useEffect(() => {
-        setPreviewUrl(props.data ? URL.createObjectURL(props.data) : null);
-    }, [props.data]);
+        if (props.id !== null && props.id !== currentNodeId) {
+            setCurrentNodeId(props.id);
+            setPreviewUrl(props.data ?? null);
+        }
+    }, [props.id, props.data, currentNodeId]);
 
-    const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0] ?? null;
+    const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+        const file: File | null = event.target.files?.[0] ?? null;
+
         if (file && file.type.startsWith('image/')) {
-            setPreviewUrl(URL.createObjectURL(file));
-            props.onInputChange(file);
+            try {
+                const res = await resizeAndEncodeImage(file, 500, 500);
+                setPreviewUrl(res);
+                props.onInputChange(res);
+            } catch (error) {
+                setPreviewUrl(null);
+                props.onInputChange(null);
+            }
         } else {
             setPreviewUrl(null);
             props.onInputChange(null);
         }
     };
+
     return (
         <div>
             {CreateLabel(props.name, ('file-upload-' + props.id))}

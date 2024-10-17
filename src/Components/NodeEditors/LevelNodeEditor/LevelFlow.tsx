@@ -20,10 +20,13 @@ import {
 import React, {useCallback, useRef, useState} from 'react';
 import {ContextModal, ContextModalData} from '../../Menus/ContextModal';
 import {InspectorSidebar} from '../../Menus/InspectorSidebar';
+import ToolMenu from '../../Menus/ToolMenu';
+import {useToast} from '../../Utils/ToastContext';
 import {CustomEdgeLine} from '../GlobalEdges/CustomEdge';
 import {
     AppNode,
-    defaultEdgeOptions, edgeTypes,
+    defaultEdgeOptions,
+    edgeTypes,
     GetTypesForFlow,
     initialNodes,
     LevelEditorNodeTypes
@@ -36,6 +39,7 @@ const fitViewOptions: FitViewOptions = {
     padding: 1
 };
 const nodeOrigin: NodeOrigin = [0.0, 0.0];
+const flowKey = 'level-flow';
 
 function LevelFlow() {
     const edgeReconnectSuccessful = useRef(true);
@@ -45,12 +49,13 @@ function LevelFlow() {
     const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
     const [editNode, setEditNode] = useState<AppNode | null>(null);
     const {setViewport} = useReactFlow();
-    const flowKey = 'level-flow';
     const [isReconnecting, setIsReconnecting] = useState(false);
     const [menu, setMenu] = useState<ContextModalData | null>(null);
     const [reconnectingEdge, setReconnectingEdge] = useState<Edge | null>(null);
+    const [isToolMenuOpen, setToolMenuOpen] = useState(false);
+    const {sendToast} = useToast();
 
-    const onReconnectStart = useCallback((event: React.MouseEvent, edge: Edge, handleType: 'source' | 'target') => {
+    const onReconnectStart = useCallback((_: React.MouseEvent, edge: Edge) => {
         //console.log(edge, handleType);
         edgeReconnectSuccessful.current = false;
         setIsReconnecting(true);
@@ -58,8 +63,6 @@ function LevelFlow() {
     }, [setIsReconnecting, edgeReconnectSuccessful]);
 
     const onReconnect = useCallback((oldEdge: Edge, newConnection: Connection) => {
-        // console.log('On Reconnect - Edge: ', oldEdge);
-        // console.log('On Reconnect - Connection: ', newConnection);
         edgeReconnectSuccessful.current = true;
         setEdges(els => reconnectEdge(oldEdge, newConnection, els));
     }, [setEdges]);
@@ -82,10 +85,15 @@ function LevelFlow() {
 
     const onInit: (rfi: any) => void = (rfi: ReactFlowInstance) => setReactFlowInstance(rfi);
 
-    const onSave: () => void = useCallback(() => {
+    const jsonReplace = '-e-'
+    const onSave: () => void = useCallback(async () => {
         if (reactFlowInstance) {
             const flow = reactFlowInstance.toObject();
-            localStorage.setItem(flowKey, JSON.stringify(flow));
+            const json = JSON.stringify(flow).replace('/',jsonReplace)
+            localStorage.setItem(flowKey, json);
+            sendToast('Saved.');
+        } else {
+            sendToast('Failed to save.');
         }
     }, [reactFlowInstance]);
 
@@ -93,16 +101,19 @@ function LevelFlow() {
         const restoreFlow: () => Promise<void> = async () => {
             const storage: string | null = localStorage.getItem(flowKey);
             if (storage === null) return;
-            const flow = JSON.parse(storage);
+            const flow = JSON.parse(storage.replace(jsonReplace,'/'));
 
             if (flow) {
                 const {x = 0, y = 0, zoom = 1} = flow.viewport;
                 setNodes(flow.nodes || []);
                 setEdges(flow.edges || []);
                 await setViewport({x, y, zoom});
+            } else {
+                sendToast('Failed to load.');
             }
         };
         await restoreFlow();
+        sendToast('Loaded.');
     }, [setNodes, setViewport]);
 
     const isValidConnection: (connection: Edge | Connection) => boolean = useCallback(
@@ -136,7 +147,8 @@ function LevelFlow() {
 
     const onPaneClick = useCallback((_: React.MouseEvent) => {
         setMenu(null);
-    }, [setMenu]);
+        setToolMenuOpen(false);
+    }, [setMenu, setToolMenuOpen]);
 
     const updateNodeData: (updatedNode: AppNode) => void = (updatedNode: AppNode) => {
         reactFlowInstance?.updateNodeData(updatedNode.id, updatedNode.data);
@@ -174,31 +186,35 @@ function LevelFlow() {
                 onSelectionChange={onSelectionChange}
                 edgesReconnectable={true}
             >
-                <Controls position={'bottom-left'} style={{left: 70}}/>
+                <Controls position={'bottom-right'}/>
                 <MiniMap pannable inversePan zoomable
                          zoomStep={1}
                          nodeBorderRadius={50}
                          nodeStrokeWidth={10}
-                         nodeStrokeColor={'#7209B7'}
+                         nodeStrokeColor={'#1489aa'}
                          maskStrokeColor={'#7c1125'}
                          maskStrokeWidth={1}
                          maskColor={'#101a1c'}
-                         nodeColor={'#101a1c'}
-                         className={'opacity-80'}/>
+                         nodeColor={'#000000'}
+                         className={'opacity-80 ml-20'}
+                         position={'bottom-left'}/>
                 <Background variant={BackgroundVariant.Dots} gap={60} size={5}
                             className={'opacity-20'}/>
                 {menu && <ContextModal {...menu}/>}
                 <CustomEdgeLine/>
-                <Panel position={'top-right'} id={'data-sidebar'}>
+                <Panel position={'top-right'} id={'data-sidebar'} className={'mt-16'}>
                     <InspectorSidebar nodeData={editNode} onNodeDataChange={(updatedData?: AppNode) => {
                         if (updatedData)
                             updateNodeData(updatedData);
-                    }}
-                    />
+                    }}/>
                 </Panel>
                 {/*<button className={'absolute top-20 left-40 z-50 pointer-events-auto'}*/}
                 {/*    onClick={() => {}}>Test</button>*/}
             </ReactFlow>
+            <Panel className={'m-0 p-0 w-full'}>
+                <ToolMenu onSave={onSave} onLoad={onRestore} isToolMenuOpen={isToolMenuOpen}
+                          setToolMenuOpen={setToolMenuOpen}/>
+            </Panel>
         </>
     );
 }

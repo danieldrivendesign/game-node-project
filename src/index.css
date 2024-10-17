@@ -150,12 +150,10 @@ body {
 .react-flow__attribution {
     opacity: 0.01;
 }
-
-
 .react-flow__controls button {
     background-color: hsl(var(--color-primary));
     color: var(--text-color);
-    border: 1px solid #7c1125;
+    border-bottom: 1px solid #7c1125;
     /*border-radius: 5px 5px 5px 5px;*/
 }
 .react-flow__controls button:first-child {
@@ -165,8 +163,6 @@ body {
     border: 1px solid #7c1125;
     border-radius: 0 0 5px 5px;
 }
-
-
 .react-flow__controls button:hover {
     background-color: rgb(37, 37, 37);
 }
@@ -174,7 +170,15 @@ body {
 .react-flow__controls button path {
     fill: var(--text-color);
 }
-.react-flow__minimap .react-flow__minimap-svg {
-    border: 1px solid #7c1125;
-    border-radius: 10%;
+.react-flow__controls {
+    @apply bg-gradient-to-t to-red-700 from-purple-600 via-teal-500 p-[0.05rem] rounded-md;
+}
+.react-flow__minimap-svg {
+    @apply rounded-lg bg-primary;
+}
+.react-flow__minimap {
+    @apply bg-gradient-to-b to-red-700 from-purple-600 via-teal-500 p-[0.05rem] rounded-lg
+}
+.react-flow__minimap-mask {
+    background-color: rgb(37, 37, 37);
 }

@@ -48,12 +48,6 @@ export const initialNodes: AppNode[] = [
     }
 ];
 
-export const nodeTypes = {
-    'levelNode': LevelNode,
-    'rerouteNode': RerouteNode
-    // Add custom nodes here
-} satisfies NodeTypes;
-
 export const edgeTypes = {
     turbo: CustomEdge
 };
@@ -74,7 +68,7 @@ export type EditorNodeType = {
 export type LevelNodeData = {
     name?: string,
     description?: string,
-    image?: File | null,
+    image?: string | null,
     entranceCount: number,
     exitCount: number,
     levelType: LevelType,

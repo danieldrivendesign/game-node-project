@@ -8,8 +8,7 @@ export default function LevelNodeEditor() {
     return (
         <div style={{height: '100vh', width: '100vw'}} className={'flex flex-col'}>
             <ReactFlowProvider>
-                <ToolMenu/>
-                <div className={'flex-grow '}>
+                <div className={'flex-grow'}>
                     <LevelFlow/>
                 </div>
             </ReactFlowProvider>

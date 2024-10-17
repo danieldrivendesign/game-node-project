@@ -21,13 +21,12 @@ export function InspectorSidebar({nodeData, onNodeDataChange}: DataEditSidebarDa
         [nodeData, onNodeDataChange]
     );
 
-    function SetMetaData(nodeMetadata: Record<string, PropertyMetadata>, newChildren: ReactElement[]){
+    function SetMetaData(nodeMetadata: Record<string, PropertyMetadata>, newChildren: ReactElement[]) {
         if (nodeData?.data == null) return;
 
         for (const propName in nodeData.data) {
             if (!nodeMetadata[propName]) continue;
 
-            //console.log(`Propname: ${propName}`);
             const props: FormFactoryProps = {
                 propName: propName,
                 data: nodeData.data,
@@ -42,6 +41,7 @@ export function InspectorSidebar({nodeData, onNodeDataChange}: DataEditSidebarDa
             }
         }
     }
+
     useEffect(() => {
         if (!nodeData) {
             setChildren([]);
@@ -79,8 +79,7 @@ export function InspectorSidebar({nodeData, onNodeDataChange}: DataEditSidebarDa
                         <div key={i}>
                             {child}
                         </div>
-                    ))
-                ) : (
+                    ))) : (
                     <p>Click a Node to edit.</p>
                 )}
             </div>

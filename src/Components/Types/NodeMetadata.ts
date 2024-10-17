@@ -3,6 +3,7 @@ export interface PropertyMetadata {
     label: string;
     isEditable: boolean;
 }
+
 export const levelNodeMetadata: Record<string, PropertyMetadata> = {
     name: {
         type: 'string',
@@ -36,6 +37,8 @@ export const levelNodeMetadata: Record<string, PropertyMetadata> = {
     }
 };
 
+
+// Add types here
 export const nodeMetadataRegistry: Record<string, Record<string, PropertyMetadata>> = {
     levelNode: levelNodeMetadata
 };

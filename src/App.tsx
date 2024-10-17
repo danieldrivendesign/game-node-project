@@ -1,9 +1,10 @@
-import {Flowbite} from 'flowbite-react';
+import {DarkThemeToggle, Flowbite} from 'flowbite-react';
 import React, {Suspense, useState} from 'react';
 import {createBrowserRouter, RouterProvider} from 'react-router-dom';
 import {DebugProvider} from './Components/Contexts/DebugProvider';
 import SidebarRetract from './Components/GUI/SidebarRetract';
 import LevelNodeEditor from './Components/Pages/LevelNodeEditor/LevelNodeEditor';
+import {ToastProvider} from './Components/Utils/ToastContext';
 import Toaster from './Components/Utils/Toaster';
 import {LoadingSpinner} from './LoadingSpinner';
 
@@ -27,9 +28,11 @@ function App() {
             <DebugProvider.Provider value={canDebug}>
                 <Flowbite>
                     <Suspense fallback={<LoadingSpinner/>}>
-                        <Toaster/>
-                        <SidebarRetract/>
-                        <RouterProvider router={router}></RouterProvider>
+                        <ToastProvider>
+                            <Toaster/>
+                            <SidebarRetract/>
+                            <RouterProvider router={router}></RouterProvider>
+                        </ToastProvider>
                     </Suspense>
                 </Flowbite>
             </DebugProvider.Provider>

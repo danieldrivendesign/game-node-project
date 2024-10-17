@@ -1,5 +1,6 @@
+import {DarkThemeToggle} from 'flowbite-react';
 import React, {useState} from 'react';
-import {HiAcademicCap, HiChevronDoubleLeft, HiChevronDoubleRight} from 'react-icons/hi';
+import {HiChevronDoubleLeft, HiChevronDoubleRight} from 'react-icons/hi';
 import {Page, pages} from './SidebarPages';
 
 function CustomSidebarItem({title, icon, link, isExpanded}: Page & { isExpanded: boolean }) {
@@ -67,34 +68,41 @@ export default function SidebarRetract() {
     return (
         <>
             <aside id="logo-sidebar"
-                   className={(isExpanded ? 'w-64 ' : 'w-16 ') + 'flex flex-col h-full mt-[3.5rem] fixed max-h-full bg-gradient-to-bl to-red-700 from-purple-600 via-teal-500 pr-[0.1rem] top-0 rounded-sm z-10 transition-all duration-150 ease-in-out -translate-x-full sm:translate-x-0'}
+                   className={(isExpanded ? 'w-48 ' : 'w-16 ') + 'h-full absolute top-0 rounded-sm z-10 transition-all duration-150 ease-in-out -translate-x-full sm:translate-x-0 mb-32 overflow-x-hidden'}
                    aria-label="Sidebar">
-                <div className={'dark:bg-primary bg-primary-light w-full flex-grow'}>
-                    <div className={'w-full flex justify-end p-2'}>
-                        {isExpanded ?
-                            <button onClick={() => setIsExpanded(false)}>
-                                <HiChevronDoubleLeft/>
-                            </button> :
-                            <button onClick={() => setIsExpanded(true)}>
-                                <HiChevronDoubleRight/>
-                            </button>}
-                    </div>
-                    <div className="h-full px-3 pb-4 overflow-y-auto bg-primary-light dark:bg-primary">
-                        <ul className="space-y-2 font-medium">
-                            {pages.map((p: Page) => {
-                                return (
-                                    <li key={crypto.randomUUID()}>
-                                        <CustomSidebarItem title={p.title} icon={p.icon}
-                                                           link={p.link}
-                                                           isExpanded={isExpanded}/>
-                                    </li>
-                                );
-                            })}
-                            <li key={crypto.randomUUID()}>
-                                <AccordionItem icon={<HiAcademicCap/>} isExpanded={isExpanded} link={''}
-                                               title={'Test'}/>
-                            </li>
-                        </ul>
+                <div
+                    className={'flex flex-col bg-gradient-to-bl to-red-700 from-purple-600 via-teal-500 pr-[0.1rem] h-full'}>
+                    <div className={'dark:bg-primary bg-primary-light w-full flex-grow pt-[3.5rem] flex flex-col'}>
+                        <div className={'w-full flex justify-end p-2'}>
+                            {isExpanded ?
+                                <button onClick={() => setIsExpanded(false)} className={'hover:opacity-70'}>
+                                    <HiChevronDoubleLeft size={'20'}/>
+                                </button> :
+                                <button onClick={() => setIsExpanded(true)} className={'hover:opacity-70'}>
+                                    <HiChevronDoubleRight size={'20'}/>
+                                </button>}
+                        </div>
+                        <div
+                            className="px-3 overflow-y-auto bg-primary-light dark:bg-primary flex flex-col flex-grow gap-4">
+                            <div className={'flex-grow'}>
+                                <ul className="space-y-2 font-medium">
+                                    {pages.map((p: Page) => {
+                                        return (
+                                            <li key={crypto.randomUUID()}>
+                                                <CustomSidebarItem title={p.title} icon={p.icon}
+                                                                   link={p.link}
+                                                                   isExpanded={isExpanded}/>
+                                            </li>
+                                        );
+                                    })}
+                                </ul>
+                            </div>
+                            <hr key={crypto.randomUUID()}
+                                className={(isExpanded ? '' : 'w-8 ') + 'h-px bg-gray-200 border-0 dark:bg-gray-700'}/>
+                            <div className={'mb-10'}>
+                                <DarkThemeToggle defaultValue={'dark'} className={'p-0 m-0 '} />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </aside>

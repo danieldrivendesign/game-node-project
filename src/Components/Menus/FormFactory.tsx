@@ -1,5 +1,4 @@
 import React from 'react';
-import {PropertyMetadata} from '../Types/NodeMetadata';
 
 import {
     CheckboxInput,
@@ -9,9 +8,10 @@ import {
     NumberInput,
     TextareaInput,
     TextInput
-} from './InputComponents';
+} from '../Helpers/InputComponents/InputComponents';
+import {PropertyMetadata} from '../Types/NodeMetadata';
 
-const componentRegistry = {
+const componentRegistry: any = {
     string: TextInput,
     boolean: CheckboxInput,
     number: NumberInput,
@@ -52,7 +52,6 @@ export function FormFactory({
     let typeName: string;
     if (metaData != undefined) {
         let options: string[] = [];
-
         if (typeof metaData.type === 'object' && 'enum' in metaData.type) {
             typeName = 'enum';
             options = metaData.type.enum;
@@ -63,18 +62,14 @@ export function FormFactory({
         props.options = options;
     } else {
         typeName = typeof data[propName];
-        //console.log('test', data[propName]);
         props.isEditable = isEditable;
         props.options = [];
-
     }
-    // @ts-ignore
-    const Comp = componentRegistry[typeName];
+
+    const Comp: any = componentRegistry[typeName];
     if (!Comp) return null;
 
     return (
-        <>
-            <Comp {...props}/>
-        </>
+        <Comp {...props}/>
     );
 }
