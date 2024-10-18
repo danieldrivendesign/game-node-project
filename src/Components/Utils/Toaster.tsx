@@ -1,5 +1,5 @@
 import {useContext} from 'react';
-import {DebugProvider} from '../Contexts/DebugProvider';
+import {DebugProvider} from '../Debug/DebugProvider';
 import {IToast, useToast} from './ToastContext';
 
 const Toaster = () => {

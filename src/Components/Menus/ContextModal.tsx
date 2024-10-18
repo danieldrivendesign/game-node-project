@@ -1,8 +1,8 @@
 import {useReactFlow} from '@xyflow/react';
-import React, {CSSProperties, DragEvent, MouseEvent, useCallback, useRef} from 'react';
+import React, {CSSProperties, DragEvent, memo, MouseEvent, useCallback, useRef} from 'react';
 import {FaSearch} from 'react-icons/fa';
 import {createNode} from '../Helpers/Helpers';
-import {EditorNodeType, LevelEditorNodeTypes} from '../NodeEditors/LevelNodeEditor/Nodes/LevelEditorNodeTypes';
+import {EditorNodeType} from '../NodeEditors/LevelNodeEditor/Nodes/LevelEditorNodeTypes';
 
 export type ContextModalData = {
     top?: number,
@@ -34,7 +34,13 @@ function ContextSearchBox() {
     );
 }
 
-export function ContextModal({top, left}: ContextModalData) {
+interface ContextModalProps {
+    top?: number;
+    left?: number;
+    editorNodes: EditorNodeType[];
+}
+
+export const ContextModal = memo(({ top, left, editorNodes }: ContextModalProps) => {
     const {getNode, addNodes, screenToFlowPosition} = useReactFlow();
     const ref = useRef<HTMLDivElement>(null);
 
@@ -57,7 +63,6 @@ export function ContextModal({top, left}: ContextModalData) {
         addNodes(newNode);
     }, [getNode, addNodes]);
 
-
     return (
         <div style={styles} ref={ref}
              className={'bg-gradient-to-r to-red-700 from-purple-600 via-teal-500 p-[0.1rem] rounded-lg z-50'}
@@ -65,12 +70,11 @@ export function ContextModal({top, left}: ContextModalData) {
             <div
                 className={'shadow-lg rounded-lg p-4 z-50 w-80 flex flex-col items-stretch justify-center border border-gray-200 bg-primary-light dark:bg-primary dark:border-gray-700'}>
                 <ContextSearchBox/>
-                {/*<p className={'pointer-events-none p-2 text-sm'}>Choose a node.</p>*/}
                 <div className={'pt-4 z-50'}>
-                    {LevelEditorNodeTypes.map((node: EditorNodeType, i: number) =>
+                    {editorNodes.map((node: EditorNodeType, i: number) =>
                         <>
                             <div
-                                key={crypto.randomUUID()}
+                                key={`$item-{i}-1`}
                                 className={'rounded-lg p-2 cursor-pointer flex justify-between hover:opacity-60 text-xs'}
                                 onClick={(e: MouseEvent<any>) => {
                                     e.preventDefault();
@@ -80,10 +84,10 @@ export function ContextModal({top, left}: ContextModalData) {
                                 draggable
                             >
                                 {node.icon}
-                                <p key={crypto.randomUUID()} className={'pr-6'}>{node.type.toReadableString()}</p>
+                                <p key={`$item-{i}-2`} className={'pr-6'}>{node.type.toReadableString()}</p>
                             </div>
-                            {i < LevelEditorNodeTypes.length - 1 &&
-                                <hr key={crypto.randomUUID()}
+                            {i < editorNodes.length - 1 &&
+                                <hr key={`$item-{i}-3`}
                                     className={'h-px bg-gray-200 border-0 dark:bg-gray-700'}/>}
                         </>
                     )}
@@ -91,4 +95,4 @@ export function ContextModal({top, left}: ContextModalData) {
             </div>
         </div>
     );
-}
+});

@@ -1,6 +1,6 @@
 import {Handle, HandleType, Position, useHandleConnections} from '@xyflow/react';
 import React, {CSSProperties, useContext, useEffect, useState} from 'react';
-import {DebugProvider} from '../../Contexts/DebugProvider';
+import {DebugProvider} from '../../Debug/DebugProvider';
 
 export type CustomHandleProps = {
     id: string,

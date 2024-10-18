@@ -12,12 +12,14 @@ import {
     Panel,
     ReactFlow,
     ReactFlowInstance,
+    ReactFlowJsonObject,
     reconnectEdge,
     useEdgesState,
     useNodesState,
     useReactFlow
 } from '@xyflow/react';
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {useGlobalStore} from '../../Helpers/Database/Exporter';
 import {ContextModal, ContextModalData} from '../../Menus/ContextModal';
 import {InspectorSidebar} from '../../Menus/InspectorSidebar';
 import ToolMenu from '../../Menus/ToolMenu';
@@ -54,9 +56,9 @@ function LevelFlow() {
     const [reconnectingEdge, setReconnectingEdge] = useState<Edge | null>(null);
     const [isToolMenuOpen, setToolMenuOpen] = useState(false);
     const {sendToast} = useToast();
+    const {dispatch} = useGlobalStore();
 
     const onReconnectStart = useCallback((_: React.MouseEvent, edge: Edge) => {
-        //console.log(edge, handleType);
         edgeReconnectSuccessful.current = false;
         setIsReconnecting(true);
         setReconnectingEdge(edge);
@@ -83,13 +85,42 @@ function LevelFlow() {
         [setEdges]
     );
 
+    useEffect(() => {
+        onRestore().then();
+    }, []);
     const onInit: (rfi: any) => void = (rfi: ReactFlowInstance) => setReactFlowInstance(rfi);
 
-    const jsonReplace = '-e-'
+    const jsonReplace = [
+        {
+            character: '/',
+            replace: '-s-'
+        },
+        {
+            character: '\\',
+            replace: '-bs-'
+        },
+        {
+            character: '"',
+            replace: '-q-'
+        },
+        {
+            character: '\n',
+            replace: '-n-'
+        },
+        {
+            character: '\t',
+            replace: '-t-'
+        }
+    ];
+
     const onSave: () => void = useCallback(async () => {
         if (reactFlowInstance) {
-            const flow = reactFlowInstance.toObject();
-            const json = JSON.stringify(flow).replace('/',jsonReplace)
+            const flow: ReactFlowJsonObject<AppNode, Edge> = reactFlowInstance.toObject();
+            dispatch({
+                type: 'ADD_LEVELDATA',
+                payload: flow
+            });
+            let json = JSON.stringify(flow);
             localStorage.setItem(flowKey, json);
             sendToast('Saved.');
         } else {
@@ -99,9 +130,9 @@ function LevelFlow() {
 
     const onRestore: () => Promise<void> = useCallback(async () => {
         const restoreFlow: () => Promise<void> = async () => {
-            const storage: string | null = localStorage.getItem(flowKey);
+            let storage: string | null = localStorage.getItem(flowKey);
             if (storage === null) return;
-            const flow = JSON.parse(storage.replace(jsonReplace,'/'));
+            const flow = JSON.parse(storage);
 
             if (flow) {
                 const {x = 0, y = 0, zoom = 1} = flow.viewport;
@@ -200,7 +231,7 @@ function LevelFlow() {
                          position={'bottom-left'}/>
                 <Background variant={BackgroundVariant.Dots} gap={60} size={5}
                             className={'opacity-20'}/>
-                {menu && <ContextModal {...menu}/>}
+                {menu && <ContextModal {...menu} editorNodes={LevelEditorNodeTypes}/>}
                 <CustomEdgeLine/>
                 <Panel position={'top-right'} id={'data-sidebar'} className={'mt-16'}>
                     <InspectorSidebar nodeData={editNode} onNodeDataChange={(updatedData?: AppNode) => {
@@ -208,8 +239,6 @@ function LevelFlow() {
                             updateNodeData(updatedData);
                     }}/>
                 </Panel>
-                {/*<button className={'absolute top-20 left-40 z-50 pointer-events-auto'}*/}
-                {/*    onClick={() => {}}>Test</button>*/}
             </ReactFlow>
             <Panel className={'m-0 p-0 w-full'}>
                 <ToolMenu onSave={onSave} onLoad={onRestore} isToolMenuOpen={isToolMenuOpen}

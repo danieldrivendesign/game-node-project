@@ -1,6 +1,4 @@
-import {HandleType, Position, useUpdateNodeInternals, XYPosition} from '@xyflow/react';
-import {useEffect} from 'react';
-import HandleLimited from '../NodeEditors/GlobalHandles/HandleLimited';
+import {HandleType, Position, XYPosition} from '@xyflow/react';
 import {AppNode} from '../NodeEditors/LevelNodeEditor/Nodes/LevelEditorNodeTypes';
 import {nodeMetadataRegistry, PropertyMetadata} from '../Types/NodeMetadata';
 
@@ -120,7 +118,7 @@ export const resizeAndEncodeImage = (file: File, maxWidth: number, maxHeight: nu
                     const resizedData = canvas.toDataURL(file.type);
                     resolve(resizedData);
                 } else {
-                    reject(new Error("Failed to create canvas context"));
+                    reject(new Error('Failed to create canvas context'));
                 }
             };
             img.onerror = (error) => reject(error);

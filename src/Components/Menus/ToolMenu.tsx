@@ -1,6 +1,7 @@
 import React, {Dispatch, SetStateAction, useEffect, useState} from 'react';
 import {AiFillGithub} from 'react-icons/ai';
 import {HelpModal} from '../GUI/HelpModal';
+import {useGlobalStore} from '../Helpers/Database/Exporter';
 
 export type DropDownItem = {
     name: string;
@@ -14,9 +15,11 @@ export interface DropDownItemProps {
     setToolMenuOpen: Dispatch<SetStateAction<boolean>>,
 }
 
+
 export default function ToolMenu({onSave, onLoad, isToolMenuOpen, setToolMenuOpen}: DropDownItemProps) {
     const [fileMenuOpen, setFileMenuOpen] = useState(false);
     const [isHelpOpen, setIsHelpOpen] = useState(false);
+    const {state} = useGlobalStore();
 
     useEffect(() => {
         if (!isToolMenuOpen) {
@@ -39,6 +42,20 @@ export default function ToolMenu({onSave, onLoad, isToolMenuOpen, setToolMenuOpe
         }
         event.preventDefault();
         setFileMenuOpen(false);
+    }
+
+    const exportToJson = () => {
+        onSave();
+        const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
+            JSON.stringify(state, null, 2)
+        )}`;
+        const link = document.createElement('a');
+        link.href = jsonString;
+        link.download = 'gameData.json';
+        link.click();
+    };
+    const importFromJson = () => {
+
     }
 
     return (
@@ -75,8 +92,7 @@ export default function ToolMenu({onSave, onLoad, isToolMenuOpen, setToolMenuOpe
                                                 }}>
                                                 Save
                                             </button>
-                                            <hr key={crypto.randomUUID()}
-                                                className={(fileMenuOpen ? '' : 'hidden ') + 'h-px bg-gray-200 border-0 dark:bg-gray-700 pointer-events-auto'}/>
+                                            <hr className={(fileMenuOpen ? '' : 'hidden ') + 'h-px bg-gray-200 border-0 dark:bg-gray-700 pointer-events-auto'}/>
                                         </li>
                                         <li>
                                             <button
@@ -87,8 +103,7 @@ export default function ToolMenu({onSave, onLoad, isToolMenuOpen, setToolMenuOpe
                                                 }}>
                                                 Load
                                             </button>
-                                            <hr key={crypto.randomUUID()}
-                                                className={(fileMenuOpen ? '' : 'hidden ') + 'h-px bg-gray-200 border-0 dark:bg-gray-700 pointer-events-auto'}/>
+                                            <hr className={(fileMenuOpen ? '' : 'hidden ') + 'h-px bg-gray-200 border-0 dark:bg-gray-700 pointer-events-auto'}/>
                                         </li>
                                         <li>
                                             <button
@@ -98,6 +113,28 @@ export default function ToolMenu({onSave, onLoad, isToolMenuOpen, setToolMenuOpe
                                                     setFileMenuOpen(false);
                                                 }}>
                                                 Help
+                                            </button>
+                                            <hr className={(fileMenuOpen ? '' : 'hidden ') + 'h-px bg-gray-200 border-0 dark:bg-gray-700 pointer-events-auto'}/>
+                                        </li>
+                                        <li>
+                                            <button
+                                                className={(fileMenuOpen ? '' : 'hidden ') + ' w-full block px-4 py-2 hover:opacity-60 pointer-events-auto'}
+                                                onClick={(e) => {
+                                                    exportToJson();
+                                                    setFileMenuOpen(false);
+                                                }}>
+                                                Export
+                                            </button>
+                                            <hr className={(fileMenuOpen ? '' : 'hidden ') + 'h-px bg-gray-200 border-0 dark:bg-gray-700 pointer-events-auto'}/>
+                                        </li>
+                                        <li>
+                                            <button
+                                                className={(fileMenuOpen ? '' : 'hidden ') + ' w-full block px-4 py-2 hover:opacity-60 pointer-events-auto'}
+                                                onClick={(e) => {
+                                                    importFromJson();
+                                                    setFileMenuOpen(false);
+                                                }}>
+                                                Import
                                             </button>
                                         </li>
                                     </ul>
