@@ -8,7 +8,7 @@ import {
     NumberInput,
     TextareaInput,
     TextInput
-} from '../Helpers/InputComponents/InputComponents';
+} from './InputComponents/InputComponents';
 import {PropertyMetadata} from '../Types/NodeMetadata';
 
 const componentRegistry: any = {

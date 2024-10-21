@@ -1,12 +1,7 @@
 import React, {Dispatch, SetStateAction, useEffect, useState} from 'react';
 import {AiFillGithub} from 'react-icons/ai';
-import {HelpModal} from '../GUI/HelpModal';
-import {useGlobalStore} from '../Helpers/Database/Exporter';
-
-export type DropDownItem = {
-    name: string;
-    onClick: () => void;
-}
+import {HelpModal} from '../HelpModal';
+import {useGlobalStore} from '../../Helpers/Database/Exporter';
 
 export interface DropDownItemProps {
     onSave: () => void;
@@ -14,7 +9,6 @@ export interface DropDownItemProps {
     isToolMenuOpen: boolean,
     setToolMenuOpen: Dispatch<SetStateAction<boolean>>,
 }
-
 
 export default function ToolMenu({onSave, onLoad, isToolMenuOpen, setToolMenuOpen}: DropDownItemProps) {
     const [fileMenuOpen, setFileMenuOpen] = useState(false);

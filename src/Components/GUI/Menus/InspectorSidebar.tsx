@@ -1,8 +1,8 @@
 import React, {ReactElement, useCallback, useEffect, useState} from 'react';
-import {GetMetadataFromType} from '../Helpers/Helpers';
-import {AppNode} from '../NodeEditors/LevelNodeEditor/Nodes/LevelEditorNodeTypes';
-import {PropertyMetadata} from '../Types/NodeMetadata';
-import {FormFactory, FormFactoryProps} from './FormFactory.js';
+import {GetMetadataFromType} from '../../Helpers/Helpers';
+import {AppNode} from '../../NodeEditors/LevelNodeEditor/Nodes/LevelEditorNodeTypes';
+import {PropertyMetadata} from '../../Types/NodeMetadata';
+import {FormFactory, FormFactoryProps} from '../../Helpers/FormFactory';
 
 type DataEditSidebarData = {
     nodeData: AppNode | null,

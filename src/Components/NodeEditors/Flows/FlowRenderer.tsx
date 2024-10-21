@@ -20,19 +20,18 @@ import {
 } from '@xyflow/react';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {useGlobalStore} from '../../Helpers/Database/Exporter';
-import {ContextModal, ContextModalData} from '../../Menus/ContextModal';
-import {InspectorSidebar} from '../../Menus/InspectorSidebar';
-import ToolMenu from '../../Menus/ToolMenu';
+import {ContextModal, ContextModalData} from '../../GUI/Menus/ContextModal';
+import {InspectorSidebar} from '../../GUI/Menus/InspectorSidebar';
+import ToolMenu from '../../GUI/Menus/ToolMenu';
 import {useToast} from '../../Utils/ToastContext';
 import {CustomEdgeLine} from '../GlobalEdges/CustomEdge';
 import {
     AppNode,
     defaultEdgeOptions,
-    edgeTypes,
+    edgeTypes, EditorNodeType,
     GetTypesForFlow,
-    initialNodes,
-    LevelEditorNodeTypes
-} from './Nodes/LevelEditorNodeTypes';
+    initialNodes
+} from '../LevelNodeEditor/Nodes/LevelEditorNodeTypes';
 
 const inputSettings = {
     deleteKeyCode: ['Backspace', 'Delete']
@@ -43,7 +42,11 @@ const fitViewOptions: FitViewOptions = {
 const nodeOrigin: NodeOrigin = [0.0, 0.0];
 const flowKey = 'level-flow';
 
-function LevelFlow() {
+interface INodeFlow{
+    nodeTypes: EditorNodeType[]
+}
+
+export default function FlowRenderer({nodeTypes}: INodeFlow) {
     const edgeReconnectSuccessful = useRef(true);
     const reactFlowRef = useRef(null);
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
@@ -198,7 +201,7 @@ function LevelFlow() {
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
-                nodeTypes={GetTypesForFlow(LevelEditorNodeTypes)}
+                nodeTypes={GetTypesForFlow(nodeTypes)}
                 {...inputSettings}
                 fitViewOptions={fitViewOptions}
                 defaultEdgeOptions={defaultEdgeOptions}
@@ -231,7 +234,7 @@ function LevelFlow() {
                          position={'bottom-left'}/>
                 <Background variant={BackgroundVariant.Dots} gap={60} size={5}
                             className={'opacity-20'}/>
-                {menu && <ContextModal {...menu} editorNodes={LevelEditorNodeTypes}/>}
+                {menu && <ContextModal {...menu} editorNodes={nodeTypes}/>}
                 <CustomEdgeLine/>
                 <Panel position={'top-right'} id={'data-sidebar'} className={'mt-16'}>
                     <InspectorSidebar nodeData={editNode} onNodeDataChange={(updatedData?: AppNode) => {
@@ -247,6 +250,3 @@ function LevelFlow() {
         </>
     );
 }
-
-export default () =>
-    <LevelFlow/>

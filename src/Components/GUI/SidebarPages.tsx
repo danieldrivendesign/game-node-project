@@ -11,7 +11,7 @@ export type Page = {
 export const pages: Page[] = [{
     title: 'Home',
     icon: <HiHome size={'1em'}/>,
-    link: '',
+    link: '/home',
     children: null
 }];
 

@@ -37,6 +37,23 @@ export const levelNodeMetadata: Record<string, PropertyMetadata> = {
     }
 };
 
+export const gameStateNodeMetadata: Record<string, PropertyMetadata> = {
+    name: {
+        type: 'string',
+        label: 'Name',
+        isEditable: true
+    },
+    description: {
+        type: 'textarea',
+        label: 'Description',
+        isEditable: true
+    },
+    image: {
+        type: 'image',
+        label: 'Image',
+        isEditable: true
+    }
+};
 
 // Add types here
 export const nodeMetadataRegistry: Record<string, Record<string, PropertyMetadata>> = {

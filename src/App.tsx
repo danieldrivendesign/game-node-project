@@ -4,6 +4,8 @@ import {createBrowserRouter, RouterProvider} from 'react-router-dom';
 import {DebugProvider} from './Components/Debug/DebugProvider';
 import SidebarRetract from './Components/GUI/SidebarRetract';
 import {GlobalProvider} from './Components/Helpers/Database/Exporter';
+import GameStateNodeEditor from './Components/Pages/GameStateNodeEditor/GameStateNodeEditor';
+import HomeMenu from './Components/Pages/Home/HomeMenu';
 import LevelNodeEditor from './Components/Pages/LevelNodeEditor/LevelNodeEditor';
 import {ToastProvider} from './Components/Utils/ToastContext';
 import Toaster from './Components/Utils/Toaster';
@@ -12,7 +14,9 @@ import {LoadingSpinner} from './LoadingSpinner';
 const router = createBrowserRouter(
     [
         {path: '*', element: <LevelNodeEditor/>},
-        {path: '/home', element: <></>}
+        {path: '/home', element: <HomeMenu/>},
+        {path: '/levelEditor', element: <LevelNodeEditor/>},
+        {path: '/gameStateEditor', element: <GameStateNodeEditor/>},
     ]
 );
 

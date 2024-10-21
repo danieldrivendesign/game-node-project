@@ -65,6 +65,7 @@ function AccordionItem({title, icon, link, isExpanded}: Page & { isExpanded: boo
 
 export default function SidebarRetract() {
     const [isExpanded, setIsExpanded] = useState(false);
+
     return (
         <>
             <aside id="logo-sidebar"
@@ -100,7 +101,7 @@ export default function SidebarRetract() {
                             <hr key={crypto.randomUUID()}
                                 className={(isExpanded ? '' : 'w-8 ') + 'h-px bg-gray-200 border-0 dark:bg-gray-700'}/>
                             <div className={'mb-10'}>
-                                <DarkThemeToggle defaultValue={'dark'} className={'p-0 m-0 '} />
+                                <DarkThemeToggle defaultValue={'dark'} className={'p-0 m-0 '}/>
                             </div>
                         </div>
                     </div>

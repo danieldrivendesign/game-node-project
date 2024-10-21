@@ -1,8 +1,8 @@
 import {useReactFlow} from '@xyflow/react';
 import React, {CSSProperties, DragEvent, memo, MouseEvent, useCallback, useRef} from 'react';
 import {FaSearch} from 'react-icons/fa';
-import {createNode} from '../Helpers/Helpers';
-import {EditorNodeType} from '../NodeEditors/LevelNodeEditor/Nodes/LevelEditorNodeTypes';
+import {createNode} from '../../Helpers/Helpers';
+import {EditorNodeType} from '../../NodeEditors/LevelNodeEditor/Nodes/LevelEditorNodeTypes';
 
 export type ContextModalData = {
     top?: number,

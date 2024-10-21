@@ -8,7 +8,8 @@ import {
 } from '@xyflow/react';
 import React, {CSSProperties, memo, ReactElement, useCallback, useEffect, useState} from 'react';
 import {ResizeIcon} from '../../../../assets/ResizeIcon';
-import {decodeImageFromBase64} from '../../../Helpers/Helpers';
+import {GetMetadataFromType} from '../../../Helpers/Helpers';
+import {PropertyMetadata} from '../../../Types/NodeMetadata';
 import HandleLimited from '../../GlobalHandles/HandleLimited';
 import {LevelNodeData} from './LevelEditorNodeTypes';
 
@@ -28,6 +29,82 @@ function CreateLabel(text: string) {
         </div>
     );
 }
+
+export interface ITextProps {
+    text: string;
+    lineClamp: 'line-clamp-1' | 'line-clamp-2' | 'line-clamp-3' | 'line-clamp-4' | 'line-clamp-5' | 'line-clamp-6';
+}
+
+function ImageDisplay(image: string) {
+    return (
+        <img style={{maxWidth: '350px', maxHeight: '300px'}}
+             className="shadow rounded-lg object-scale-down object-center w-full m-2 p-2" src={image}
+             alt="map"/>
+    );
+}
+
+function TextDisplay({text, lineClamp}: ITextProps) {
+
+    return (
+        <div className={'flex flex-col items-stretch'}>
+            {CreateLabel(text)}
+            <p className={`${lineClamp} indent-5`}>{text.toTitleCase()}</p>
+        </div>
+    );
+}
+
+export function NodeDataDisplayFactory(nodeData: any, nodeType: string) {
+    const [children, setChildren] = useState<ReactElement[]>([]);
+
+    function SetChildren() {
+        const nodeMetadata: Record<string, PropertyMetadata> | null = GetMetadataFromType(nodeType);
+        if (!nodeMetadata) return null;
+
+        const newChildren: ReactElement[] = [];
+    }
+
+    function SetMetaData(nodeMetadata: Record<string, PropertyMetadata>, newChildren: ReactElement[]) {
+        if (nodeData?.data == null) return;
+
+        for (const propName in nodeData.data) {
+            if (!nodeMetadata[propName]) continue;
+
+            const props = {
+                propName: propName,
+                data: nodeData.data,
+                id: `${nodeData.id}-${propName}`,
+                metaData: nodeMetadata[propName]
+            };
+
+            //const item = FormFactory(props);
+            // if (item != null) {
+            //     newChildren.push(item);
+            // }
+        }
+    }
+
+    useEffect(() => {
+        if (!nodeData) {
+            setChildren([]);
+            return;
+        }
+        const nodeMetadata: Record<string, PropertyMetadata> | null = GetMetadataFromType(nodeType);
+        if (!nodeMetadata) {
+            setChildren([<></>]);
+            return;
+        }
+        const newChildren: ReactElement[] = [];
+
+        SetMetaData(nodeMetadata, newChildren);
+        setChildren(newChildren);
+
+    }, [nodeData]);
+
+    return (
+        <></>
+    );
+}
+
 
 export default memo(({id, data, isConnectable, type}: NodeProps<Node<LevelNodeData>>) => {
     const updateNodeInternals = useUpdateNodeInternals();
