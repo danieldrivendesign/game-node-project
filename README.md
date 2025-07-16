@@ -1,8 +1,8 @@
-# React + Vite
+_This is a work in progress, more features coming later!_
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Currently, this node editor allows users to define basic scene data, and connect them to other scenes.
+This is useful for defining entrances and exits in scenes for your game in order to easily see how your game world flows.
 
-Currently, two official plugins are available:
+For example: If your making an RPG, you may have a simple setup like this `Town -> Field -> Town2 -> Dungeon`
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Afterwards, you can export the data as a json file so you can import it into your favorite game engine or application!
